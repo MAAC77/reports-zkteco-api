@@ -1,0 +1,91 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    // previewFeatures = []
+}
+
+generator dbml {
+    provider = "prisma-dbml-generator"
+}
+
+model Usuario {
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+    id              String           @id @default(uuid())
+    usuario         String           @db.VarChar(30)
+    nombres         String
+    primerApellido  String?          @map("primer_apellido")
+    segundoApellido String?          @map("segundo_apellido")
+    nroDocumento    String           @map("nro_documento")
+    email           String           @unique
+    password        String
+    role            Role
+    HorarioUsuario  HorarioUsuario[]
+    Marcacion       Marcacion[]
+
+    @@map("usuarios")
+}
+
+model Horario {
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    id             String           @id @default(uuid())
+    nombre         String
+    descripcion    String
+    HorarioDetalle HorarioDetalle[]
+    HorarioUsuario HorarioUsuario[]
+}
+
+model HorarioDetalle {
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    id            String   @id @default(uuid())
+    horaEntrada   String   @map("hora_entrada")
+    horaSalida    String   @map("hora_salida")
+    entradaMaxima String   @map("entrada_maxima")
+    entradaMinima String   @map("entrada_minima")
+    salidaMaxima  String   @map("salida_maxima")
+    salidaMinima  String   @map("salida_minima")
+    tolerancia    Int
+    idHorario     String   @map("id_horario")
+    horario       Horario  @relation(fields: [idHorario], references: [id])
+
+    @@map("horarios_detalles")
+}
+
+model HorarioUsuario {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid())
+    idHorario String   @map("id_horario")
+    idUsuario String   @map("id_usuario")
+
+    horario   Horario     @relation(fields: [idHorario], references: [id])
+    usuario   Usuario     @relation(fields: [idUsuario], references: [id])
+    Marcacion Marcacion[]
+
+    @@map("horarios_usuarios")
+}
+
+model Marcacion {
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt
+    id               BigInt         @id @default(autoincrement())
+    hora             String
+    fecha            String
+    idUsuario        String         @map("id_usuario")
+    idHorarioUsuario String         @map("id_usuario_usuario")
+    usuario          Usuario        @relation(fields: [idUsuario], references: [id])
+    horarioUsuario   HorarioUsuario @relation(fields: [idHorarioUsuario], references: [id])
+
+    @@map("marcaciones")
+}
+
+enum Role {
+    ADMIN
+    USER
+}

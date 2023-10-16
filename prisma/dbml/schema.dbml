@@ -1,0 +1,82 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table usuarios {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id String [pk]
+  usuario String [not null]
+  nombres String [not null]
+  primerApellido String
+  segundoApellido String
+  nroDocumento String [not null]
+  email String [unique, not null]
+  password String [not null]
+  role Role [not null]
+  HorarioUsuario horarios_usuarios [not null]
+  Marcacion marcaciones [not null]
+}
+
+Table Horario {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id String [pk]
+  nombre String [not null]
+  descripcion String [not null]
+  HorarioDetalle horarios_detalles [not null]
+  HorarioUsuario horarios_usuarios [not null]
+}
+
+Table horarios_detalles {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id String [pk]
+  horaEntrada String [not null]
+  horaSalida String [not null]
+  entradaMaxima String [not null]
+  entradaMinima String [not null]
+  salidaMaxima String [not null]
+  salidaMinima String [not null]
+  tolerancia Int [not null]
+  idHorario String [not null]
+  horario Horario [not null]
+}
+
+Table horarios_usuarios {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id String [pk]
+  idHorario String [not null]
+  idUsuario String [not null]
+  horario Horario [not null]
+  usuario usuarios [not null]
+  Marcacion marcaciones [not null]
+}
+
+Table marcaciones {
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  id BigInt [pk, increment]
+  hora String [not null]
+  fecha String [not null]
+  idUsuario String [not null]
+  idHorarioUsuario String [not null]
+  usuario usuarios [not null]
+  horarioUsuario horarios_usuarios [not null]
+}
+
+Enum Role {
+  ADMIN
+  USER
+}
+
+Ref: horarios_detalles.idHorario > Horario.id
+
+Ref: horarios_usuarios.idHorario > Horario.id
+
+Ref: horarios_usuarios.idUsuario > usuarios.id
+
+Ref: marcaciones.idUsuario > usuarios.id
+
+Ref: marcaciones.idHorarioUsuario > horarios_usuarios.id
