@@ -78,7 +78,7 @@ model Marcacion {
     hora             String
     fecha            String
     idUsuario        String         @map("id_usuario")
-    idHorarioUsuario String         @map("id_usuario_usuario")
+    idHorarioUsuario String         @map("id_horario_usuario")
     usuario          Usuario        @relation(fields: [idUsuario], references: [id])
     horarioUsuario   HorarioUsuario @relation(fields: [idHorarioUsuario], references: [id])
 

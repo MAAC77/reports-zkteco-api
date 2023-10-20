@@ -34,7 +34,7 @@ export async function cargarRegistros() {
       await prisma.marcacion.create({
         data: {
           fecha: `${i}/10/2023`,
-          hora: tiempoAleatorio(8, 7),
+          hora: tiempoAleatorio(13, 14),
           idUsuario: usuario.id,
           idHorarioUsuario: horarioTarde.id,
         },
@@ -42,7 +42,7 @@ export async function cargarRegistros() {
       await prisma.marcacion.create({
         data: {
           fecha: `${i}/10/2023`,
-          hora: tiempoAleatorio(12, 13),
+          hora: tiempoAleatorio(17, 18),
           idUsuario: usuario.id,
           idHorarioUsuario: horarioTarde.id,
         },
