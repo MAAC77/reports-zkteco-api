@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { RegistrarUsuarioDto } from './dto/registrar-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -50,23 +51,26 @@ export class AuthService {
 
     const pwCompare = await argon.verify(user.password, dto.password);
     if (!pwCompare) throw new ForbiddenException('Invalid email or password');
-
-    return await this.signToken(user.id, user.usuario);
+    const usuario = {
+      name: `${user.nombres} ${user.primerApellido} ${user.segundoApellido}`,
+      email: user.email,
+      id: user.id,
+    };
+    return await this.signToken(user.id, usuario);
   }
 
-  async signToken(userId: string, username: string): Promise<object> {
+  async signToken(userId: string, user: any): Promise<object> {
     const payload = {
       sub: userId,
-      username,
+      user,
     };
-
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '180m',
       secret: this.config.get('JWT_SECRET'),
     });
 
     return {
-      access_token: token,
+      token,
     };
   }
 }
