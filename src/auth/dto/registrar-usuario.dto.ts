@@ -1,18 +1,15 @@
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { RolEnum } from '@prisma/client';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+} from 'class-validator';
 
 export class RegistrarUsuarioDto {
   @IsEmail()
   email: string;
-
-  //   @IsNotEmpty()
-  //   @MinLength(8)
-  //   password: string;
-
-  // @Field({ nullable: true })
-  // firstname?: string;
-
-  // @Field({ nullable: true })
-  // lastname?: string;
 
   @IsNotEmpty()
   @MinLength(5)
@@ -22,8 +19,14 @@ export class RegistrarUsuarioDto {
   nombres: string;
 
   @IsNotEmpty()
+  @IsEnum(RolEnum)
+  rol: RolEnum;
+
+  @IsNotEmpty()
+  @IsOptional()
   primerApellido?: string;
 
   @IsNotEmpty()
+  @IsOptional()
   segundoApellido?: string;
 }

@@ -11,6 +11,7 @@ import { RegistrarUsuarioDto } from './dto/registrar-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { use } from 'passport';
+import { RolEnum } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
           ...dto,
           usuario: dto.nroDocumento,
           password,
-          role: 'USER',
+          rol: RolEnum.USUARIO,
         },
       })
       .catch((error) => {
@@ -47,14 +48,15 @@ export class AuthService {
       where: { usuario: dto.usuario },
     });
 
-    if (!user) throw new ForbiddenException('Invalid email or password');
+    if (!user) throw new ForbiddenException('Usuario o email incorrecto');
 
     const pwCompare = await argon.verify(user.password, dto.password);
-    if (!pwCompare) throw new ForbiddenException('Invalid email or password');
+    if (!pwCompare) throw new ForbiddenException('Usuario o email incorrecto');
     const usuario = {
       name: `${user.nombres} ${user.primerApellido} ${user.segundoApellido}`,
       email: user.email,
       id: user.id,
+      rol: user.rol,
     };
     return await this.signToken(user.id, usuario);
   }

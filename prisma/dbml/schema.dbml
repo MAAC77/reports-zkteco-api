@@ -13,7 +13,7 @@ Table usuarios {
   nroDocumento String [not null]
   email String [unique, not null]
   password String [not null]
-  role Role [not null]
+  rol RolEnum [not null]
   HorarioUsuario horarios_usuarios [not null]
   Marcacion marcaciones [not null]
 }
@@ -66,9 +66,9 @@ Table marcaciones {
   horarioUsuario horarios_usuarios [not null]
 }
 
-Enum Role {
-  ADMIN
-  USER
+Enum RolEnum {
+  ADMINISTRADOR
+  USUARIO
 }
 
 Ref: horarios_detalles.idHorario > Horario.id

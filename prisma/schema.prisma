@@ -23,7 +23,7 @@ model Usuario {
     nroDocumento    String           @map("nro_documento")
     email           String           @unique
     password        String
-    role            Role
+    rol             RolEnum
     HorarioUsuario  HorarioUsuario[]
     Marcacion       Marcacion[]
 
@@ -85,7 +85,7 @@ model Marcacion {
     @@map("marcaciones")
 }
 
-enum Role {
-    ADMIN
-    USER
+enum RolEnum {
+    ADMINISTRADOR
+    USUARIO
 }

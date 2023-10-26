@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, RolEnum } from '@prisma/client';
 import * as argon from 'argon2';
 
 const prisma = new PrismaClient();
@@ -16,7 +16,7 @@ export async function cargarUsuarios() {
     segundoApellido: 'Durkin',
     nroDocumento: '2163147',
     email: 'idurkin0@springer.com',
-    role: 'ADMIN',
+    rol: RolEnum.ADMINISTRADOR,
     password: await argon.hash('2163147'),
   };
   const usuarios = [
@@ -188,7 +188,7 @@ export async function cargarUsuarios() {
   for (const item of usuarios) {
     const password = await argon.hash(item.nroDocumento);
     await prisma.usuario.create({
-      data: { ...item, role: 'USER', password },
+      data: { ...item, rol: RolEnum.USUARIO, password },
     });
   }
 }
