@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
   async register(dto: RegistrarUsuarioDto) {
     const password = await argon.hash(dto.nroDocumento);
-    const user = await this.prisma.usuario
+    await this.prisma.usuario
       .create({
         data: {
           ...dto,
@@ -34,13 +34,15 @@ export class AuthService {
       .catch((error) => {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === 'P2002') {
-            throw new ForbiddenException('Credentials are already taken.');
+            throw new ForbiddenException(
+              `Ya existen registros con el mismo valor en el campo ${error.meta?.target}`,
+            );
           }
         }
         throw new InternalServerErrorException(error.meta.cause);
       });
 
-    return await this.signToken(user.id, user.usuario);
+    return { mensaje: 'Usuario registrado' };
   }
 
   async login(dto: LoginDto) {

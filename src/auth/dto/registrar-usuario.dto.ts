@@ -4,18 +4,22 @@ import {
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  IsString,
   MinLength,
 } from 'class-validator';
 
 export class RegistrarUsuarioDto {
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsNotEmpty()
+  @IsString()
   @MinLength(5)
   nroDocumento: string;
 
   @IsNotEmpty()
+  @IsString()
   nombres: string;
 
   @IsNotEmpty()
@@ -23,10 +27,12 @@ export class RegistrarUsuarioDto {
   rol: RolEnum;
 
   @IsNotEmpty()
+  @IsString()
   @IsOptional()
   primerApellido?: string;
 
   @IsNotEmpty()
+  @IsString()
   @IsOptional()
   segundoApellido?: string;
 }
