@@ -11,8 +11,14 @@ import { RegistrarUsuarioDto } from './dto/registrar-usuario.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { use } from 'passport';
-import { RolEnum } from '@prisma/client';
+import { RolEnum, Usuario } from '@prisma/client';
 
+export type Pagination = {
+  total: number;
+  perPage: number;
+  page: number;
+  lastPage: number;
+};
 @Injectable()
 export class AuthService {
   constructor(
@@ -20,6 +26,7 @@ export class AuthService {
     private jwt: JwtService,
     private config: ConfigService,
   ) {}
+
   async register(dto: RegistrarUsuarioDto) {
     const password = await argon.hash(dto.nroDocumento);
     await this.prisma.usuario
@@ -61,6 +68,37 @@ export class AuthService {
       rol: user.rol,
     };
     return await this.signToken(user.id, usuario);
+  }
+
+  async me(idUsuario: string) {
+    const user = await this.prisma.usuario.findFirst({
+      where: { id: idUsuario },
+    });
+    return {
+      ...user,
+      name: `${user.nombres} ${user.primerApellido} ${user.segundoApellido}`,
+      create_at: user.createdAt,
+      updated_at: user.updatedAt,
+      status: 'ACTIVO',
+    };
+  }
+
+  async users(
+    pagination: Pagination,
+  ): Promise<{ data: Usuario[]; pagination: Pagination }> {
+    const users = await this.prisma.usuario.findMany({
+      take: Number(pagination.perPage),
+      skip: (+pagination.page - 1) * +pagination.perPage,
+    });
+    const total = await this.prisma.usuario.count();
+    const lastPage = Math.round(total / pagination.perPage);
+    return {
+      data: users.map((user) => ({
+        ...user,
+        name: `${user.nombres} ${user.primerApellido} ${user.segundoApellido}`,
+      })),
+      pagination: { total, lastPage, perPage: pagination.perPage, page: 1 },
+    };
   }
 
   async signToken(userId: string, user: any): Promise<object> {
