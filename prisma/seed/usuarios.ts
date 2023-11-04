@@ -1,15 +1,14 @@
-import { PrismaClient, Prisma, RolEnum } from '@prisma/client';
+import { PrismaClient, RolEnum } from '@prisma/client';
 import * as argon from 'argon2';
 
 const prisma = new PrismaClient();
 
 export async function cargarUsuarios() {
   await prisma.usuario.deleteMany();
-  // await prisma.post.deleteMany();
 
-  console.log('Seeding...');
+  console.log('Seeding usuarios...');
 
-  const usuarioAdmin: Prisma.UsuarioCreateInput = {
+  const usuarioAdmin = {
     usuario: '2163147',
     nombres: 'Idalina',
     primerApellido: 'Endrizzi',
@@ -182,13 +181,47 @@ export async function cargarUsuarios() {
     },
   ];
 
+  const personaAdmin = await prisma.persona.create({
+    data: {
+      nombres: usuarioAdmin.nombres,
+      primerApellido: usuarioAdmin.primerApellido,
+      segundoApellido: usuarioAdmin.segundoApellido,
+      nroDocumento: usuarioAdmin.nroDocumento,
+      genero: 'Masculino',
+      telefono: null,
+      celular: 12345678,
+    },
+  });
   await prisma.usuario.create({
-    data: { ...usuarioAdmin },
+    data: {
+      usuario: usuarioAdmin.usuario,
+      password: usuarioAdmin.password,
+      correo: usuarioAdmin.email,
+      rol: RolEnum.USUARIO,
+      idPersona: personaAdmin.id,
+    },
   });
   for (const item of usuarios) {
     const password = await argon.hash(item.nroDocumento);
+    const persona = await prisma.persona.create({
+      data: {
+        nombres: item.nombres,
+        primerApellido: item.primerApellido,
+        segundoApellido: item.segundoApellido,
+        nroDocumento: item.nroDocumento,
+        genero: 'Masculino',
+        telefono: null,
+        celular: 12345678,
+      },
+    });
     await prisma.usuario.create({
-      data: { ...item, rol: RolEnum.USUARIO, password },
+      data: {
+        usuario: item.usuario,
+        password,
+        correo: item.email,
+        rol: RolEnum.USUARIO,
+        idPersona: persona.id,
+      },
     });
   }
 }

@@ -12,22 +12,65 @@ generator dbml {
     provider = "prisma-dbml-generator"
 }
 
+model Parametro {
+    id    String @id @default(uuid())
+    grupo String
+    clave String
+    valor String
+
+    @@map("parametros")
+}
+
 model Usuario {
-    createdAt       DateTime         @default(now())
-    updatedAt       DateTime         @updatedAt
-    id              String           @id @default(uuid())
-    usuario         String           @db.VarChar(30)
-    nombres         String
-    primerApellido  String?          @map("primer_apellido")
-    segundoApellido String?          @map("segundo_apellido")
-    nroDocumento    String           @map("nro_documento")
-    email           String           @unique
-    password        String
-    rol             RolEnum
-    HorarioUsuario  HorarioUsuario[]
-    Marcacion       Marcacion[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    id        String   @id @default(uuid())
+    usuario   String   @db.VarChar(30)
+    password  String
+    correo    String   @unique
+    rol       RolEnum
+    idPersona String
+
+    persona        Persona          @relation(fields: [idPersona], references: [id])
+    HorarioUsuario HorarioUsuario[]
+    Marcacion      Marcacion[]
+    UnidadUsuario  UnidadUsuario[]
 
     @@map("usuarios")
+}
+
+model Persona {
+    id              String    @id @default(uuid())
+    nombres         String
+    primerApellido  String    @map("primer_apellido")
+    segundoApellido String?   @map("segundo_apellido")
+    nroDocumento    String    @map("nro_documento")
+    genero          String
+    telefono        Int?
+    celular         Int
+    Usuario         Usuario[]
+
+    @@map("personas")
+}
+
+model Unidad {
+    id            String          @id @default(uuid())
+    nombre        String
+    descripcion   String?
+    UnidadUsuario UnidadUsuario[]
+
+    @@map("unidades")
+}
+
+model UnidadUsuario {
+    id        String  @id @default(uuid())
+    cargo     String
+    idUsuario String
+    idUnidad  String
+    usuario   Usuario @relation(fields: [idUsuario], references: [id])
+    unidad    Unidad  @relation(fields: [idUnidad], references: [id])
+
+    @@map("unidad_personas")
 }
 
 model Horario {
@@ -38,6 +81,8 @@ model Horario {
     descripcion    String
     HorarioDetalle HorarioDetalle[]
     HorarioUsuario HorarioUsuario[]
+
+    @@map("horarios")
 }
 
 model HorarioDetalle {
@@ -50,6 +95,11 @@ model HorarioDetalle {
     entradaMinima String   @map("entrada_minima")
     salidaMaxima  String   @map("salida_maxima")
     salidaMinima  String   @map("salida_minima")
+    lunes         Boolean
+    martes        Boolean
+    miercoles     Boolean
+    jueves        Boolean
+    viernes       Boolean
     tolerancia    Int
     idHorario     String   @map("id_horario")
     horario       Horario  @relation(fields: [idHorario], references: [id])

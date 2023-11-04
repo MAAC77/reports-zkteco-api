@@ -2,23 +2,57 @@
 //// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 //// ------------------------------------------------------
 
+Table parametros {
+  id String [pk]
+  grupo String [not null]
+  clave String [not null]
+  valor String [not null]
+}
+
 Table usuarios {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   id String [pk]
   usuario String [not null]
-  nombres String [not null]
-  primerApellido String
-  segundoApellido String
-  nroDocumento String [not null]
-  email String [unique, not null]
   password String [not null]
+  correo String [unique, not null]
   rol RolEnum [not null]
+  idPersona String [not null]
+  persona personas [not null]
   HorarioUsuario horarios_usuarios [not null]
   Marcacion marcaciones [not null]
+  UnidadUsuario unidad_personas [not null]
 }
 
-Table Horario {
+Table personas {
+  id String [pk]
+  nombres String [not null]
+  primerApellido String [not null]
+  segundoApellido String
+  nroDocumento String [not null]
+  genero String [not null]
+  telefono Int
+  celular Int [not null]
+  Usuario usuarios [not null]
+}
+
+Table unidades {
+  id String [pk]
+  nombre String [not null]
+  descripcion String
+  UnidadUsuario unidad_personas [not null]
+}
+
+Table unidad_personas {
+  id String [pk]
+  cargo String [not null]
+  idUsuario String [not null]
+  idUnidad String [not null]
+  usuario usuarios [not null]
+  unidad unidades [not null]
+}
+
+Table horarios {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   id String [pk]
@@ -38,9 +72,14 @@ Table horarios_detalles {
   entradaMinima String [not null]
   salidaMaxima String [not null]
   salidaMinima String [not null]
+  lunes Boolean [not null]
+  martes Boolean [not null]
+  miercoles Boolean [not null]
+  jueves Boolean [not null]
+  viernes Boolean [not null]
   tolerancia Int [not null]
   idHorario String [not null]
-  horario Horario [not null]
+  horario horarios [not null]
 }
 
 Table horarios_usuarios {
@@ -49,7 +88,7 @@ Table horarios_usuarios {
   id String [pk]
   idHorario String [not null]
   idUsuario String [not null]
-  horario Horario [not null]
+  horario horarios [not null]
   usuario usuarios [not null]
   Marcacion marcaciones [not null]
 }
@@ -71,9 +110,15 @@ Enum RolEnum {
   USUARIO
 }
 
-Ref: horarios_detalles.idHorario > Horario.id
+Ref: usuarios.idPersona > personas.id
 
-Ref: horarios_usuarios.idHorario > Horario.id
+Ref: unidad_personas.idUsuario > usuarios.id
+
+Ref: unidad_personas.idUnidad > unidades.id
+
+Ref: horarios_detalles.idHorario > horarios.id
+
+Ref: horarios_usuarios.idHorario > horarios.id
 
 Ref: horarios_usuarios.idUsuario > usuarios.id
 

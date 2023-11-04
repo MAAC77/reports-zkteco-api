@@ -2,13 +2,15 @@ import { PrismaClient } from '@prisma/client';
 import { cargarUsuarios } from './usuarios';
 import { cargarHorarios } from './horario';
 import { cargarRegistros } from './registros';
+import { cargarUnidades } from './unidades';
 
 const prisma = new PrismaClient();
 
 async function main() {
   await cargarUsuarios();
-  await cargarHorarios();
-  await cargarRegistros();
+  await cargarUnidades();
+  // await cargarHorarios();
+  // await cargarRegistros();
 }
 
 main()
